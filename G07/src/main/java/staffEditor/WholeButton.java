@@ -1,0 +1,95 @@
+package staffEditor;
+
+import javax.swing.*;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.net.URL; 
+
+public class WholeButton extends IconButton{
+	
+	private static final long serialVersionUID = 1L;//因為 Swing 元件可序列化，IDE 建議你加 ID 以避免未來版本不一致問題。
+	
+    Toolbar parent;
+    ImageIcon imageIcon;
+    private JPanel rightPanel;
+
+	public WholeButton(Toolbar p, JPanel rightPanel) 
+	{
+		super(p);
+		parent=p;
+		this.rightPanel = rightPanel; 
+        imageURL   = cldr.getResource("images/whole.png");
+        icon = new ImageIcon(imageURL);
+        this.setIcon(icon);
+
+        this.setToolTipText("全音符");
+        
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                updateBtnColor();
+            }
+        });
+	}
+
+	public void doSomething() {
+	    // 檢查 parent 是否為 null
+	    if (parent == null) {
+	        System.out.println("Error: parent is null");
+	        return;
+	    }
+	    if (parent.inputtype == inputType.Cursor) {
+	        System.out.println("Input type is Cursor, exiting doSomething");
+	        return;
+	    }
+
+	    // 創建 Toolkit
+	    Toolkit tk = Toolkit.getDefaultToolkit();
+	    // 初始化 icon 和 imageIcon
+	    if (imageURL == null) {
+	        return;
+	    }
+	    icon = new ImageIcon(imageURL);
+	    imageIcon = new ImageIcon(icon.getImage().getScaledInstance(16, 16, Image.SCALE_DEFAULT));
+	    // 創建自定義鼠標
+	    Cursor cu = tk.createCustomCursor(imageIcon.getImage(), new Point(12, 18), "Quarter Note Cursor");
+	    parent.longtype = longType.whole;
+	    // 設置所有 tab 的鼠標
+	    if (parent.parent == null) 
+	    {
+	        return;
+	    }
+	    if (parent.parent.tabbedPane == null) 
+	    {
+	        return;
+	    }
+	    int tabCount = parent.parent.tabbedPane.getTabCount();
+	    for (int i = 0; i < tabCount; i++) {
+	        Component tab = parent.parent.tabbedPane.getComponentAt(i);
+	        if (tab == null) 
+	        {
+	            System.out.println("Error: Tab at index " + i + " is null");
+	        } else 
+	        {
+	            tab.setCursor(cu);
+	        }
+	    }
+	}
+	
+	private void updateBtnColor()
+	{
+		for (Component btn : rightPanel.getComponents()) 
+		{
+            if (btn instanceof JButton) 
+            {
+                ((JButton) btn).setBackground(Color.WHITE);
+            }
+        }
+		
+		this.setBackground(Color.LIGHT_GRAY);
+	}
+}
